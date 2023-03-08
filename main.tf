@@ -5,13 +5,26 @@ provider "aws" {
 data "aws_canonical_user_id" "current" {}
 
 resource "aws_s3_bucket" "test-gis-bucket" {
-  bucket = "gfee-gis-reverse-proxy-poc"
+  bucket        = "gfee-gis-reverse-proxy-poc"
+  force_destroy = true
 
   tags = {
-    Name        = "My bucket"
+    Name        = "terraform gis proxy poc"
     Environment = "dev"
   }
 
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "auto-clean-1-day" {
+  bucket = aws_s3_bucket.test-gis-bucket.id
+  rule {
+    id     = "auto-delete-rule-1"
+    status = "Enabled"
+
+    expiration {
+      days = 1
+    }
+  }
 }
 
 resource "aws_s3_bucket_acl" "my_bucket_acl" {
