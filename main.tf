@@ -42,15 +42,6 @@ resource "aws_s3_bucket_acl" "my_bucket_acl" {
         uri  = "http://acs.amazonaws.com/groups/global/AllUsers"
       }
     }
-
-    grant {
-      permission = "WRITE"
-      grantee {
-        type = "Group"
-        uri  = "http://acs.amazonaws.com/groups/global/AllUsers"
-      }
-    }
-
   }
 
 }
