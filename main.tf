@@ -29,20 +29,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "auto-clean-1-day" {
 
 resource "aws_s3_bucket_acl" "my_bucket_acl" {
   bucket = aws_s3_bucket.test-gis-bucket.id
-
-  access_control_policy {
-    owner {
-      id = data.aws_canonical_user_id.current.id
-    }
-
-    grant {
-      permission = "READ"
-      grantee {
-        type = "Group"
-        uri  = "http://acs.amazonaws.com/groups/global/AllUsers"
-      }
-    }
-  }
-
+  acl = "private"
 }
 
