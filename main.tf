@@ -7,6 +7,7 @@ data "aws_canonical_user_id" "current" {}
 resource "aws_s3_bucket" "test-gis-bucket" {
   bucket        = "gfee-gis-reverse-proxy-poc"
   force_destroy = true
+  # acl           = "private"
 
   tags = {
     Name        = "terraform gis proxy poc"
@@ -27,23 +28,15 @@ resource "aws_s3_bucket_lifecycle_configuration" "auto-clean-1-day" {
   }
 }
 
-resource "aws_s3_bucket_acl" "test-gis-bucket-acl" {
+resource "aws_s3_bucket_ownership_controls" "acl_ownership_controls" {
   bucket = aws_s3_bucket.test-gis-bucket.id
-  acl    = "private"
-
-  #  access_control_policy {
-  #    owner {
-  #      id = data.aws_canonical_user_id.current.id
-  #    }
-  #
-  #    grant {
-  #      permission = "READ"
-  #      grantee {
-  #        type = "Group"
-  #        uri  = "http://acs.amazonaws.com/groups/global/AllUsers"
-  #      }
-  #    }
-  #  }
-
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
 }
 
+resource "aws_s3_bucket_acl" "private_bucket_acl" {
+  depends_on = [aws_s3_bucket_ownership_controls.acl_ownership_controls]
+  bucket     = aws_s3_bucket.test-gis-bucket.id
+  acl        = "private"
+}
